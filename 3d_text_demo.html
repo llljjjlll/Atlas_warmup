@@ -43,6 +43,7 @@
 		var scene;
 		var plane;
 		var light;
+		var canvas1;
 
 		init();
 		animate();
@@ -64,9 +65,9 @@
 			container.appendChild( renderer.domElement );
 			scene = new THREE.Scene();
 
-			camera = new THREE.PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, 10000 );
-			camera.position.z = 1;
-			camera.position.y = 2;
+			camera = new THREE.PerspectiveCamera( 100, window.innerWidth / window.innerHeight, 0.1, 1000 );
+			camera.position.z = 0.7;
+			camera.position.y = 0;
 
 			camera.lookAt({
 				x: 0,
@@ -86,21 +87,22 @@
 			for ( var i = 0; i < 6; i ++ ) {
 				materials.push( new THREE.MeshBasicMaterial( { map: textures[ i ] } ) );
 			}
-			var skyBox = new THREE.Mesh( new THREE.CubeGeometry( 1, 1, 1 ), new THREE.MultiMaterial( materials ) );
+			var skyBox = new THREE.Mesh( new THREE.CubeGeometry( 10, 10, 10 ), new THREE.MultiMaterial( materials ) );
 			skyBox.applyMatrix( new THREE.Matrix4().makeScale( 1, 1, -1 ) );
-			//scene.add( skyBox );
+			scene.add( skyBox );
 
 			window.addEventListener( 'resize', onWindowResize, false );
 
 			for ( var i = 12; i >= 0; i-- ){
-				var geo = new THREE.PlaneBufferGeometry( 0.02 * i, 0.02 * i, 8, 8 );
+				var geo = new THREE.CubeGeometry( 0.02 * i, 0.02 * i, 0.0005 );
 				var mat = new THREE.MeshPhongMaterial({color: 0xcccccc, side: THREE.DoubleSide, transparent: true });
 				mat.opacity = 1;
+
 				plane_p = new THREE.Mesh(geo, mat);
-				plane_p.position.z = 0.02 * (12 - i) + 0.2;
+				plane_p.position.z = 0.02 * (12 - i);
 
 				plane_n = new THREE.Mesh(geo, mat);
-				plane_n.position.z = -0.02 * (12 - i) + 0.2;
+				plane_n.position.z = -0.02 * (12 - i);
 
 				plane_n.receiveShadow = true;
 
@@ -118,9 +120,9 @@
 			ui_group.position.z = -0.3
 			ui_group.position.x = 0
 
-			//scene.add( ui_group );
+			scene.add( ui_group );
 
-			var groundMaterial = new THREE.MeshPhongMaterial({color:0x6c6c6c});
+			var groundMaterial = new THREE.MeshPhongMaterial({color:0x000000});
 
 			groundMaterial.transparent = true;
 			groundMaterial.opacity = 0.8;
@@ -136,13 +138,13 @@
 			frontcube.position.y = 0;
 			frontcube.position.z = 0.2;
 
-			scene.add(frontcube);
+			//scene.add(frontcube);
 
 			ground = new THREE.Mesh(new THREE.PlaneGeometry(0.5,0.5), groundMaterial);
 			ground.castShadow = true;
 
 			ground.receiveShadow = true;
-			ground.position.set(0,0,-0.4);
+			ground.position.set(0,0,-0.05);
 			scene.add(ground);
 
 
@@ -155,8 +157,8 @@
 			ground2.position.set(0,0,-2);
 			scene.add(ground2);
 
-   			light = new THREE.SpotLight(0xdfebff, 1.75);
-    		light.position.set(0.5, 0.5, 2);
+   			light = new THREE.SpotLight(0xdfebff, 1.7);
+    		light.position.set(0.02, 0.02, 0.6);
     		light.position.multiplyScalar(1);
 
 		    light.castShadow = true;
@@ -165,7 +167,7 @@
 		    light.shadowMapWidth = 512;
 		    light.shadowMapHeight = 512;
 
-		    var d = 10;
+		    var d = 1;
 
 		    light.shadowCameraLeft = -d;
 		    light.shadowCameraRight = d;
@@ -174,11 +176,11 @@
 		    
 		    light.shadow.camera.near = 0.1;
 		    light.shadowCameraFar = 10;
-		    light.shadowDarkness = 0.3;
+		    light.shadowDarkness = 0.1;
 		    light.shadow.camera.fov = 5;
 
 		    scene.add(light);		
-    	    scene.add(new THREE.AmbientLight(0x666666, 0.1));
+    	    //scene.add(new THREE.AmbientLight(0x666666, 0.1));
 
 /*			var directionalLight = new THREE.DirectionalLight( 0xdfebff, 1.5 );
 			directionalLight.position.set( 0, 0, 50 );
@@ -223,12 +225,32 @@
 */
 			var lightHelper = new THREE.SpotLightHelper( light );
 //			var lightHelper2 = new THREE.SpotLightHelper( directionalLight );
-
 //			scene.add( spotLight );
 
-			scene.add( lightHelper );
+			//scene.add( lightHelper );
 //			scene.add( lightHelper2);
+
+
+			canvas1 = document.createElement('canvas');
+			var context1 = canvas1.getContext('2d');
+
+			context1.font = "Bold 30px Arial";
+			context1.fillStyle = "rgba(255,255,255,0.95)";
+    		context1.fillText('UBER Atlas!', 40, 100);
 			
+			var texture1 = new THREE.Texture(canvas1) 
+			texture1.needsUpdate = true;
+
+    		var material1 = new THREE.MeshBasicMaterial( {map: texture1, side:THREE.DoubleSide } );
+   			material1.transparent = true;
+
+   			var mesh1 = new THREE.Mesh(
+        		new THREE.PlaneGeometry(0.4, 0.2),
+        		material1
+      		);
+			mesh1.position.set(0,0,0);
+			scene.add( mesh1 );
+
 		}
 
 		function getTexturesFromAtlasFile( atlasImgUrl, tilesNum ) {
@@ -267,7 +289,7 @@
 			controls.update();
 			renderer.render( scene, camera );
 			requestAnimationFrame( animate );
-			ui_group.rotation.y += 0;
+			ui_group.rotation.y += 0.02;
 		}
 
 		</script>
