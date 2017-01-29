@@ -42,6 +42,7 @@
 		var renderer;
 		var scene;
 		var plane;
+
 		init();
 		animate();
 		var ui_group;
@@ -50,9 +51,13 @@
 			var container = document.getElementById( 'container' );
 
 			renderer = new THREE.WebGLRenderer();
+			renderer.setClearColor( 0x000000);	
+
 			renderer.setPixelRatio( window.devicePixelRatio );
 			renderer.setSize( window.innerWidth, window.innerHeight );
-
+			renderer.gammaInput = true;
+			renderer.gammaOutput = true;
+			
 			container.appendChild( renderer.domElement );
 			scene = new THREE.Scene();
 
@@ -72,14 +77,15 @@
 				materials.push( new THREE.MeshBasicMaterial( { map: textures[ i ] } ) );
 			}
 			var skyBox = new THREE.Mesh( new THREE.CubeGeometry( 1, 1, 1 ), new THREE.MultiMaterial( materials ) );
-			skyBox.applyMatrix( new THREE.Matrix4().makeScale( 1, 1, - 1 ) );
+			skyBox.applyMatrix( new THREE.Matrix4().makeScale( 1, 1, -1 ) );
 			scene.add( skyBox );
 
 			window.addEventListener( 'resize', onWindowResize, false );
 
 			for ( var i = 12; i >= 0; i-- ){
 				var geo = new THREE.PlaneBufferGeometry( 0.02 * i, 0.02 * i, 8, 8 );
-				var mat = new THREE.MeshBasicMaterial({color: 0xffffff, side: THREE.DoubleSide });
+				var mat = new THREE.MeshPhongMaterial({color: 0xffffff, side: THREE.DoubleSide, transparent: true });
+				mat.opacity = 1;
 				plane_p = new THREE.Mesh(geo, mat);
 				plane_p.position.z = 0.02 * (12 - i);
 
@@ -96,6 +102,25 @@
 
 			scene.add( ui_group );
 
+			var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+			directionalLight.position.set( 0, 0, 1 ).normalize();
+
+			//scene.add( directionalLight );
+			
+			var spotLight = new THREE.SpotLight( 0xffffff, 1);
+			spotLight.position.set( 0.1, 0.4, 0.1 );
+			spotLight.castShadow = true;
+
+			spotLight.shadow.mapSize.width = 500;
+			spotLight.shadow.mapSize.height = 500;
+
+			spotLight.shadow.camera.near = 5;
+			spotLight.shadow.camera.far = 400;
+			spotLight.shadow.camera.fov = 3;
+
+			scene.add( spotLight );
+
+			
 		}
 
 		function getTexturesFromAtlasFile( atlasImgUrl, tilesNum ) {
@@ -104,6 +129,8 @@
 				textures[ i ] = new THREE.Texture();
 			}
 			var imageObj = new Image();
+			imageObj.src = atlasImgUrl;
+
 			imageObj.onload = function() {
 				var canvas, context;
 				var tileWidth = imageObj.height;
@@ -117,7 +144,6 @@
 					textures[ i ].needsUpdate = true;
 				}
 			};
-			imageObj.src = atlasImgUrl;
 			return textures;
 		}
 
