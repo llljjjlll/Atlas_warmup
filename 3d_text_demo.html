@@ -122,7 +122,7 @@
 
 			scene.add( ui_group );
 
-			var groundMaterial = new THREE.MeshPhongMaterial({color:0x000000});
+			var groundMaterial = new THREE.MeshPhongMaterial({color:0xffffff});
 
 			groundMaterial.transparent = true;
 			groundMaterial.opacity = 0.8;
@@ -145,7 +145,7 @@
 
 			ground.receiveShadow = true;
 			ground.position.set(0,0,-0.05);
-			scene.add(ground);
+			//scene.add(ground);
 
 
 
@@ -176,7 +176,7 @@
 		    
 		    light.shadow.camera.near = 0.1;
 		    light.shadowCameraFar = 10;
-		    light.shadowDarkness = 0.1;
+		    light.shadowDarkness = -0.1;
 		    light.shadow.camera.fov = 5;
 
 		    scene.add(light);		
@@ -234,9 +234,9 @@
 			canvas1 = document.createElement('canvas');
 			var context1 = canvas1.getContext('2d');
 
-			context1.font = "Bold 30px Arial";
-			context1.fillStyle = "rgba(255,255,255,0.95)";
-    		context1.fillText('UBER Atlas!', 40, 100);
+			context1.font = "Bold 40px Arial";
+			context1.fillStyle = "rgba(0,0,0,0.95)";
+    		context1.fillText('UBER Atlas', 40, 100);
 			
 			var texture1 = new THREE.Texture(canvas1) 
 			texture1.needsUpdate = true;
@@ -245,10 +245,10 @@
    			material1.transparent = true;
 
    			var mesh1 = new THREE.Mesh(
-        		new THREE.PlaneGeometry(0.4, 0.2),
+        		new THREE.PlaneGeometry(0.8, 0.4),
         		material1
       		);
-			mesh1.position.set(0,0,0);
+			mesh1.position.set(0.02,-0.4,-1);
 			scene.add( mesh1 );
 
 		}
